@@ -1,16 +1,18 @@
 'use client'
-import React from 'react'
-import { toast } from 'sonner'
+import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
+
 
 function Homepage() {
   return (
     <>
-    <div className=''>Homepage</div>
-    <button
-      onClick={() => toast('Hello from Sonner!')}
-      className="bg-blue-500 text-white px-4 py-2 rounded">
-        Click me
-      </button>
+      <div className="flex flex-col">
+        <div className="w-full justify-end flex">
+          <Button variant="outline" className="mt-4 dark:bg-green-300 dark:text-gray-900" >
+                <span><PlusCircle /></span>New note
+            </Button>
+        </div>
+      </div>
 </>
   )
 }
