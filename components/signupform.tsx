@@ -50,19 +50,19 @@ function Signupform() {
     <div>
       <form className='flex flex-col w-full gap-5 mt-4 items-center px-3' onSubmit={handleSubmit}>
         <div className=" flex gap-1 w-full flex-col">
-          <input type="text" id="first_name" name="first_name" placeholder='First Name' required className= "px-2  py-2 mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 border-1" value={form.first_name} onChange={handleChange} />
+          <input type="text" id="first_name" name="first_name" placeholder='First Name' required className= "px-2  py-2 mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 border" value={form.first_name} onChange={handleChange} />
         </div>
         <div className=" flex gap-1 w-full flex-col">
-          <input type="text" id="last_name" placeholder='Last Name' name="last_name" required className= "px-2  py-2 mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 border-1" value={form.last_name} onChange={handleChange} />
+          <input type="text" id="last_name" placeholder='Last Name' name="last_name" required className= "px-2  py-2 mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 border" value={form.last_name} onChange={handleChange} />
         </div>
         <div className="flex gap-1 w-full flex-col">
-          <input type="email" placeholder='Email' id="email" name="email" required className= "px-2  py-2 mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 border-1" value={form.email} onChange={handleChange} />
+          <input type="email" placeholder='Email' id="email" name="email" required className= "px-2  py-2 mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 border" value={form.email} onChange={handleChange} />
         </div>
         <div className=" flex gap-1 w-full flex-col">
-          <input type="password" id="password" placeholder='Password' name="password" required className="mt-1  px-2  py-2 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 border-1" value={form.password} onChange={handleChange} />
+          <input type="password" id="password" placeholder='Password' name="password" required className="mt-1  px-2  py-2 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 border" value={form.password} onChange={handleChange} />
         </div>
         <div className=" flex gap-1 w-full flex-col">
-          <input type="password" id="confirm_password" placeholder='Confirm Password' name="confirm_password" required className="mt-1  px-2  py-2 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 border-1" value={form.confirm_password} onChange={handleChange} />
+          <input type="password" id="confirm_password" placeholder='Confirm Password' name="confirm_password" required className="mt-1  px-2  py-2 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 border" value={form.confirm_password} onChange={handleChange} />
         </div>
         {error && (
           <div className="text-red-500 text-sm">

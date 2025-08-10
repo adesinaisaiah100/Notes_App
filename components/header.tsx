@@ -38,7 +38,7 @@ function Header() {
     };
 
     return (
-        <header className="w-full justify-between items-center flex p-4 border-1 border-neutral-700 rounded-full dark:bg-[#000] shadow-lg px-3 sm:px-8 relative">
+        <header className=" justify-between items-center ml-8 flex-1 mt-4 flex p-4 border border-neutral-700 rounded-full dark:bg-[#000] shadow-lg px-3 sm:px-8 relative">
             <Link href='/' className="flex flex-row items-end gap-2">
                 <Image src={logo} alt="GOAT Notes Logo" width={60} height={60} className="rounded-full piority" />
                 <h1 className="text-2xl flex flex-col font-semibold leading-6 pb-1">GOAT <span>Notes</span></h1>
@@ -52,21 +52,21 @@ function Header() {
                     </>
                 ) : (
                     <>
-                        <Button asChild>
-                            <Link href="/Register" className="hidden sm:block">Register</Link>
-                        </Button>
                         <Button asChild variant={"outline"}>
+                            <Link href="/Register" className="max-sm:hidden sm:block">Register</Link>
+                        </Button>
+                        <Button asChild variant={"outline"} className="bg-black text-white hover:bg-[#444] hover:text-white">
                             <Link href="/login">Login</Link>
                         </Button>
 
                     </>
                 )}
                 {theme === "light" ? (
-                    <Button variant={"ghost"} size="icon" onClick={() => setTheme("dark")} className="rounded-full border-1 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700">
+                    <Button variant={"ghost"} size="icon" onClick={() => setTheme("dark")} className="rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700">
                         <Sun />
                     </Button>
                 ) : (
-                    <Button variant={"ghost"} size="icon" onClick={() => setTheme("light")} className="rounded-full border-1 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700">
+                    <Button variant={"ghost"} size="icon" onClick={() => setTheme("light")} className="rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700">
                         <Moon />
                     </Button>
                 )}

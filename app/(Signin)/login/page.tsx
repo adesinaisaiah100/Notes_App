@@ -31,7 +31,7 @@ function LoginPage() {
       <div className="mt-4">
         <Button
           variant="outline"
-          className="rounded-full bg-white text-black hover:bg-gray-100 border flex items-center justify-center gap-2 w-full"
+          className="rounded-full bg-white text-black hover:bg-gray-100 dark:text-white border flex items-center justify-center gap-2 w-full"
           onClick={() => signIn("google", { callbackUrl: "/" })}
         >
           <FcGoogle /> Sign in with Google
