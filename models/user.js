@@ -12,7 +12,9 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: true,
-    }
-});
+    },
+    },
+    { timestamps: true }
+);
 
 export default models.User || model('User', userSchema);

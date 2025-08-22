@@ -1,7 +1,27 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Check, Heading1, Heading2, ListIcon, ListOrdered, PlusCircle } from "lucide-react";
+import {
+  Check,
+  Heading1,
+  Heading2,
+  ListIcon,
+  ListOrdered,
+  PlusCircle,
+  PencilIcon,
+  Trash,
+  Pencil,
+} from "lucide-react";
 import { BotIcon } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input"; // assuming you have Input component
+
 import {
   Drawer,
   DrawerClose,
@@ -14,7 +34,13 @@ import {
 } from "@/components/ui/drawer";
 import Image from "next/image";
 import { ListStart } from "lucide-react";
-import { BoldIcon, UnderlineIcon, Code, ItalicIcon, ImageIcon } from "lucide-react";
+import {
+  BoldIcon,
+  UnderlineIcon,
+  Code,
+  ItalicIcon,
+  ImageIcon,
+} from "lucide-react";
 import {
   createEditor,
   BaseEditor,
@@ -24,10 +50,22 @@ import {
   Transforms,
 } from "slate";
 import { Slate, Editable, withReact, ReactEditor } from "slate-react";
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import AI from "./AI/ai"
+
+type ApiNoteResponse = Note | Note[];
 
 type CustomElement = {
-  type: "code" | "paragraph" | "heading" | "list-item" | "image";
+  type:
+    | "code"
+    | "paragraph"
+    | "heading-one"
+    | "heading-two"
+    | "list-item"
+    | "ordered-list"
+    | "unordered-list"
+    | "image";
   url?: string;
   alt?: string;
   children: CustomText[];
@@ -46,102 +84,188 @@ declare module "slate" {
   }
 }
 
+type Note = {
+  _id: string;
+  userId: string;
+  author: string;
+  title: string;
+  content: Descendant[]; // Use Slate's Descendant type for content
+  createdAt: string;
+  updatedAt: string;
+};
+
+
+
 function Homepage() {
+  const { data: session } = useSession();
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingNote, setEditingNote] = useState<Note | null>(null);
 
-  const [noteValue, setNoteValue] = useState("");
-  console.log(noteValue)
+  useEffect(() => {
+    if (!session) return;
+    const fetchNotes = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/notes");
+        if (!res.ok) throw new Error("Failed to fetch notes");
+        const data = await res.json();
+        setNotes(data);
+      } catch (error) {
+        console.error(error);
+        alert("Error fetching notes");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchNotes();
+  }, [session]);
 
-  const [isActivea, setIsActivea] = useState(false)
-  const [isActiveb, setIsActiveb] = useState(false)
-  const [isActivec, setIsActivec] = useState(false)
-  const [isActivee, setIsActivee] = useState(false)
-  const [isActivef, setIsActivef] = useState(false)
-  const [isActiveg, setIsActiveg] = useState(false)
-  const [isActiveh, setIsActiveh] = useState(false)
-  const [isActivei, setIsActivei] = useState(false)
+  const handleSave = async () => {
+    try {
+      const content = editor.children;
+      const res = await fetch(
+        editingNote ? `/api/notes/${editingNote._id}` : "/api/notes",
+        {
+          method: editingNote ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, content }),
+        },
+      );
+
+      if (!res.ok) throw new Error("Failed to save note");
+      const savedNote = await res.json();
+
+      if (editingNote) {
+        setNotes((prev) =>
+          prev.map((n) => (n._id === savedNote._id ? savedNote : n)),
+        );
+        setEditingNote(null);
+      } else {
+        setNotes((prev) => [savedNote, ...prev]);
+      }
+
+      setTitle("");
+      editor.children = [{ type: "paragraph", children: [{ text: "" }] }];
+      setDrawerOpen(false);
+    } catch (error) {
+      console.error(error);
+      alert("Error saving note");
+    }
+  };
+
+  const renderNotePreview = (content: Descendant[]) => {
+    if (!Array.isArray(content))
+      return <span className="text-xs text-gray-600">Invalid content</span>;
+    try {
+      return content.map((node, idx) => {
+        if (!Element.isElement(node) || !Array.isArray(node.children))
+          return null;
+        return node.children.map((child, cIdx) => (
+          <span key={`${idx}-${cIdx}`} className="text-xs text-gray-600">
+            {child.text || ""}
+          </span>
+        ));
+      });
+    } catch {
+      return <span className="text-xs text-gray-600">Invalid content</span>;
+    }
+  };
+
+  const [isActivea, setIsActivea] = useState(false);
+  const [isActiveb, setIsActiveb] = useState(false);
+  const [isActivec, setIsActivec] = useState(false);
+  const [isActivee, setIsActivee] = useState(false);
+  const [isActivef, setIsActivef] = useState(false);
+  const [isActiveg, setIsActiveg] = useState(false);
+  const [isActiveh, setIsActiveh] = useState(false);
+  const [isActivei, setIsActivei] = useState(false);
 
   function handleActivea() {
-    setIsActivea(item => !item)
+    setIsActivea((item) => !item);
   }
   function handleActiveb() {
-    setIsActiveb(item => !item)
+    setIsActiveb((item) => !item);
   }
   function handleActivec() {
-    setIsActivec(item => !item)
+    setIsActivec((item) => !item);
   }
 
   function handleActivee() {
-    setIsActivee(item => !item)
+    setIsActivee((item) => !item);
   }
   function handleActivef() {
-    setIsActivef(item => !item)
+    setIsActivef((item) => !item);
   }
   function handleActiveg() {
-    setIsActiveg(item => !item)
+    setIsActiveg((item) => !item);
   }
   function handleActiveh() {
-    setIsActiveh(item => !item)
+    setIsActiveh((item) => !item);
   }
   function handleActivei() {
-    setIsActivei(item => !item)
+    setIsActivei((item) => !item);
   }
 
-  const stylesa = isActivea ? 
-{
-    backgroundColor: "#222"
-} :
-{
-    backgroundColor: ""
-} 
-  const stylesb = isActiveb ? 
-{
-    backgroundColor: "#222"
-} :
-{
-    backgroundColor: ""
-} 
-  const stylesc = isActivec ? 
-{
-    backgroundColor: "#222"
-} :
-{
-    backgroundColor: ""
-} 
-  const stylese = isActivee ? 
-{
-    backgroundColor: "#222"
-} :
-{
-    backgroundColor: ""
-} 
-  const stylesf = isActivef ? 
-{
-    backgroundColor: "#222"
-} :
-{
-    backgroundColor: ""
-} 
-  const stylesg = isActiveg ? 
-{
-    backgroundColor: "#222"
-} :
-{
-    backgroundColor: ""
-} 
-  const stylesh = isActiveh ? 
-{
-    backgroundColor: "#222"
-} :
-{
-    backgroundColor: ""
-} 
-  const stylesi = isActivei ? 
-{
-    backgroundColor: "#222"
-} :
-{
-    backgroundColor: ""
-} 
+  const stylesa = isActivea
+    ? {
+        backgroundColor: "#222",
+      }
+    : {
+        backgroundColor: "",
+      };
+  const stylesb = isActiveb
+    ? {
+        backgroundColor: "#222",
+      }
+    : {
+        backgroundColor: "",
+      };
+  const stylesc = isActivec
+    ? {
+        backgroundColor: "#222",
+      }
+    : {
+        backgroundColor: "",
+      };
+  const stylese = isActivee
+    ? {
+        backgroundColor: "#222",
+      }
+    : {
+        backgroundColor: "",
+      };
+  const stylesf = isActivef
+    ? {
+        backgroundColor: "#222",
+      }
+    : {
+        backgroundColor: "",
+      };
+  const stylesg = isActiveg
+    ? {
+        backgroundColor: "#222",
+      }
+    : {
+        backgroundColor: "",
+      };
+  const stylesh = isActiveh
+    ? {
+        backgroundColor: "#222",
+      }
+    : {
+        backgroundColor: "",
+      };
+  const stylesi = isActivei
+    ? {
+        backgroundColor: "#222",
+      }
+    : {
+        backgroundColor: "",
+      };
   const [editor] = useState(() => {
     const editor = withReact(createEditor());
     const { isVoid } = editor;
@@ -160,9 +284,9 @@ function Homepage() {
 
   const CustomEditor = {
     handlePaste(editor, event) {
-       const text = event.clipboardData.getData('text/plain')
-       
-        console.log('onPaste', event.clipboardData.getData('text/plain'))
+      const text = event.clipboardData.getData("text/plain");
+
+      console.log("onPaste", event.clipboardData.getData("text/plain"));
     },
 
     isBoldMarkActive(editor) {
@@ -178,6 +302,40 @@ function Homepage() {
     isItalicMarkActive(editor) {
       const marks = Editor.marks(editor);
       return marks ? marks.italic === true : false;
+    },
+
+    isHeading1Active(editor) {
+      const [match] = Editor.nodes(editor, {
+        match: (n) => Element.isElement(n) && n.type === "heading-one",
+      });
+      return !!match;
+    },
+    isHeading2Active(editor) {
+      const [match] = Editor.nodes(editor, {
+        match: (n) => Element.isElement(n) && n.type === "heading-two",
+      });
+      return !!match;
+    },
+
+    isOrderedListActive(editor) {
+      const [match] = Editor.nodes(editor, {
+        match: (n) => Element.isElement(n) && n.type === "ordered-list",
+      });
+      return !!match;
+    },
+
+    isUnorderedListActive(editor) {
+      const [match] = Editor.nodes(editor, {
+        match: (n) => Element.isElement(n) && n.type === "unordered-list",
+      });
+      return !!match;
+    },
+
+    isListItemActive(editor) {
+      const [match] = Editor.nodes(editor, {
+        match: (n) => Element.isElement(n) && n.type === "list-item",
+      });
+      return !!match;
     },
 
     isCodeBlockActive(editor) {
@@ -212,6 +370,36 @@ function Homepage() {
       );
     },
 
+    toggleHeading1(editor) {
+      const isActive = CustomEditor.isHeading1Active(editor);
+      Transforms.setNodes(
+        editor,
+        { type: isActive ? "paragraph" : "heading-one" },
+        { match: (n) => Element.isElement(n) && Editor.isBlock(editor, n) },
+      );
+    },
+
+    toggleHeading2(editor) {
+      const isActive = CustomEditor.isHeading2Active(editor);
+      Transforms.setNodes(
+        editor,
+        { type: isActive ? "paragraph" : "heading-two" },
+        { match: (n) => Element.isElement(n) && Editor.isBlock(editor, n) },
+      );
+    },
+
+    toggleListItem(editor) {
+      const isActive = CustomEditor.isListItemActive(editor);
+      Transforms.setNodes(
+        editor,
+        {
+          type: isActive ? "paragraph" : "list-item",
+          children: [{ text: "" }],
+        },
+        { match: (n) => Element.isElement(n) && Editor.isBlock(editor, n) },
+      );
+    },
+
     toggleUnderlineMark(editor) {
       const isActive = CustomEditor.isUnderlineMarkActive(editor);
       if (isActive) {
@@ -229,21 +417,74 @@ function Homepage() {
         Editor.addMark(editor, "italic", true);
       }
     },
+
+    toggleOrderedList(editor) {
+      const isActive = CustomEditor.isOrderedListActive(editor);
+
+      if (isActive) {
+        // Convert back to paragraph
+        Transforms.unwrapNodes(editor, {
+          match: (n) => Element.isElement(n) && n.type === "ordered-list",
+          split: true,
+        });
+        Transforms.setNodes(editor, { type: "paragraph" });
+      } else {
+        // Convert to list item first, then wrap in ordered list
+        Transforms.setNodes(editor, { type: "list-item" });
+        Transforms.wrapNodes(editor, { type: "ordered-list", children: [] });
+      }
+    },
+
+    toggleUnorderedList(editor) {
+      const isActive = CustomEditor.isUnorderedListActive(editor);
+
+      if (isActive) {
+        // Convert back to paragraph
+        Transforms.unwrapNodes(editor, {
+          match: (n) => Element.isElement(n) && n.type === "unordered-list",
+          split: true,
+        });
+        Transforms.setNodes(editor, { type: "paragraph" });
+      } else {
+        // Convert to list item first, then wrap in unordered list
+        Transforms.setNodes(editor, { type: "list-item" });
+        Transforms.wrapNodes(editor, { type: "unordered-list", children: [] });
+      }
+    },
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const url = reader.result as string;
-        CustomEditor.insertImage(editor, url);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("File size must be less than 5MB");
+      return;
     }
-    if (event.target) {
-      event.target.value = "";
+
+    if (!file.type.startsWith("image/")) {
+      alert("Please select a valid image file");
+      return;
     }
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (res.ok) {
+      const { url } = await res.json();
+      CustomEditor.insertImage(editor, url);
+    } else {
+      alert("Error uploading image");
+    }
+
+    event.target.value = "";
   };
 
   const renderLeaf = useCallback((props) => {
@@ -277,7 +518,7 @@ function Homepage() {
         const { url, alt } = props.element;
         return (
           <div {...props.attributes}>
-            <div contentEditable={false}>
+            <div contentEditable={false} style={{ userSelect: "none" }}>
               <Image
                 src={url}
                 alt={alt || ""}
@@ -288,61 +529,102 @@ function Homepage() {
           </div>
         );
       }
-      case "heading":
-        return <h1 {...props.attributes}>{props.children}</h1>;
+      case "heading-one":
+        return (
+          <h1 {...props.attributes} className="text-2xl font-bold">
+            {props.children}
+          </h1>
+        );
+      case "heading-two":
+        return (
+          <h2 {...props.attributes} className="text-xl font-semibold">
+            {props.children}
+          </h2>
+        );
+      case "ordered-list":
+        return (
+          <ol
+            {...props.attributes}
+            style={{ paddingLeft: "24px", listStyleType: "decimal" }}
+          >
+            {props.children}
+          </ol>
+        );
+      case "unordered-list":
+        return (
+          <ul
+            {...props.attributes}
+            style={{ paddingLeft: "24px", listStyleType: "disc" }}
+          >
+            {props.children}
+          </ul>
+        );
       case "list-item":
         return <li {...props.attributes}>{props.children}</li>;
       default:
         return <p {...props.attributes}>{props.children}</p>;
     }
   }, []);
-  
+
+  //   useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     if (editor.children.length > 1 || editor.children[0].children[0].text) {
+  //       handleSave(); // Call save function periodically
+  //     }
+  //   }, 30000); // Every 30 seconds
+  //   return () => clearInterval(interval);
+  // }, [editor.children, title, editingNote]);
+
   return (
     <>
       <div className="flex flex-col">
         <div className="flex w-full justify-end gap-4">
           <Drawer>
-            <DrawerTrigger>
-              <Button
-                variant="outline"
-                className="mt-4 flex w-[120px] justify-center bg-black text-gray-100 hover:bg-[#444] hover:text-white dark:border-1 dark:border-green-300 dark:text-gray-200 dark:hover:bg-[#111]"
-              >
-                <span>
-                  <BotIcon />
-                </span>
-                Ask Ai
-              </Button>
+            <DrawerTrigger className="focus-visible:ring-ring border-input mt-4 flex h-9 w-[120px] items-center justify-center gap-2 rounded-md border bg-black px-3 text-sm font-medium whitespace-nowrap text-gray-100 shadow-sm transition-colors hover:bg-[#444] hover:text-white focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 dark:border-green-300 dark:text-gray-200 dark:hover:bg-[#111]">
+              <span>
+                <BotIcon />
+              </span>
+              Ask Ai
             </DrawerTrigger>
-            <DrawerContent>
-              <DrawerHeader>
-                <DrawerTitle>Are you absolutely sure?</DrawerTitle>
-                <DrawerDescription>
-                  This action cannot be undone.
-                </DrawerDescription>
-              </DrawerHeader>
-              <DrawerFooter>
-                <Button>Submit</Button>
-                <DrawerClose>
-                  <Button variant="outline">Cancel</Button>
-                </DrawerClose>
-              </DrawerFooter>
+            <DrawerContent className="h-[70vh] min-h-[70vh] border-t-1 border-t-gray-500 bg-white dark:bg-[#000]">
+              <AI notes={notes} />
             </DrawerContent>
           </Drawer>
-          <Drawer >
-            <DrawerTrigger>
-              <Button
-                variant="outline"
-                className="mt-4 flex w-[120px] justify-center dark:bg-green-300 dark:text-gray-900 dark:hover:bg-green-200"
-              >
-                <span>
-                  <PlusCircle />
-                </span>
-                New note
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="focus-visible:ring-ring border-input hover:bg-accent hover:text-accent-foreground mt-4 flex h-9 w-[120px] items-center justify-center gap-2 rounded-md border bg-[#111] px-3 text-sm font-medium whitespace-nowrap shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 dark:bg-green-300 dark:text-gray-900 dark:hover:bg-green-200">
+                <PlusCircle /> New Note
               </Button>
-            </DrawerTrigger>
-            <DrawerContent className="h-[100vh] bg-white dark:bg-[#000]">
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>New Note</DialogTitle>
+              </DialogHeader>
+              <Input
+                placeholder="Enter note title..."
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+              <DialogFooter>
+                <Button
+                  onClick={() => {
+                    if (!title) return alert("Please enter a title");
+                    setIsDialogOpen(false);
+                    setDrawerOpen(true);
+                    // Open the drawer editor for creating
+                  }}
+                >
+                  Continue
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+            <DrawerContent className="max-h-[100vh] bg-white dark:bg-[#000]">
               <DrawerHeader>
-                <DrawerTitle className="text-lg">New Note</DrawerTitle>
+                <DrawerTitle className="text-lg">
+                  {editingNote ? "Edit Note" : "New Note"}
+                </DrawerTitle>
                 {/* <DrawerDescription>
                   Create a new note to save your thoughts.
                 </DrawerDescription> */}
@@ -357,10 +639,14 @@ function Homepage() {
                     );
                     if (isAsstChange) {
                       const content = JSON.stringify(value);
+                      console.log("Content saved:", content);
+
+                      // Save to localStorage or any other storage
+                      // This is where you can save the content to a database or local storage
+                      // For example:
                       localStorage.setItem("content", content);
                     }
                   }}
-                  
                 >
                   <input
                     type="file"
@@ -369,22 +655,23 @@ function Homepage() {
                     accept="image/*"
                     className="hidden"
                   />
-                  <div className="flex flex-row items-center gap-2 relative">
+                  <div className="relative flex flex-row items-center gap-2">
                     <Button
                       variant="outline"
                       style={stylesa}
+                      aria-label="Toggle bold"
                       onClick={handleActivea}
                       onMouseDown={(event) => {
                         event.preventDefault();
                         CustomEditor.toggleBoldMark(editor);
                       }}
-                      
                     >
                       <BoldIcon />
                     </Button>
                     <Button
                       variant="outline"
-                       style={stylesb}
+                      style={stylesb}
+                      aria-label="Toggle italic"
                       onClick={handleActiveb}
                       onMouseDown={(event) => {
                         event.preventDefault();
@@ -396,6 +683,7 @@ function Homepage() {
                     <Button
                       variant="outline"
                       style={stylesc}
+                      aria-label="Toggle underline"
                       onClick={handleActivec}
                       onMouseDown={(event) => {
                         event.preventDefault();
@@ -406,6 +694,7 @@ function Homepage() {
                     </Button>
                     <Button
                       variant="outline"
+                      aria-label="Insert image"
                       onMouseDown={(event) => {
                         event.preventDefault();
                         fileInputRef.current?.click();
@@ -416,6 +705,7 @@ function Homepage() {
                     <Button
                       variant="outline"
                       style={stylese}
+                      aria-label="Toggle code block"
                       onClick={handleActivee}
                       onMouseDown={(event) => {
                         event.preventDefault();
@@ -427,10 +717,11 @@ function Homepage() {
                     <Button
                       variant="outline"
                       style={stylesf}
+                      aria-label="Toggle list item"
                       onClick={handleActivef}
                       onMouseDown={(event) => {
                         event.preventDefault();
-                        CustomEditor.toggleCodeBlock(editor);
+                        CustomEditor.toggleOrderedList(editor);
                       }}
                     >
                       <ListOrdered />
@@ -438,10 +729,11 @@ function Homepage() {
                     <Button
                       variant="outline"
                       style={stylesg}
+                      aria-label="Toggle unordered list"
                       onClick={handleActiveg}
                       onMouseDown={(event) => {
                         event.preventDefault();
-                        CustomEditor.toggleCodeBlock(editor);
+                        CustomEditor.toggleUnorderedList(editor);
                       }}
                     >
                       <ListIcon />
@@ -449,37 +741,39 @@ function Homepage() {
                     <Button
                       variant="outline"
                       style={stylesh}
+                      aria-label="Toggle heading 1"
                       onClick={handleActiveh}
                       onMouseDown={(event) => {
                         event.preventDefault();
-                        CustomEditor.toggleCodeBlock(editor);
+                        CustomEditor.toggleHeading1(editor);
                       }}
                     >
                       <Heading1 />
                     </Button>
                     <Button
                       variant="outline"
+                      aria-label="Toggle heading 2"
                       style={stylesi}
                       onClick={handleActivei}
                       onMouseDown={(event) => {
                         event.preventDefault();
-                        CustomEditor.toggleCodeBlock(editor);
+                        CustomEditor.toggleHeading2(editor);
                       }}
                     >
-                     <Heading2 />
+                      <Heading2 />
                     </Button>
-                    <DrawerClose>
-                  <Button variant="outline" className="absolute top-0 right-0">Save <Check /></Button>
-                </DrawerClose>    
+                    <DrawerClose
+                      onClick={handleSave}
+                      className="focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground absolute top-0 right-0 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-3 text-sm font-medium whitespace-nowrap shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+                    >
+                      {editingNote ? "Update Note" : "Save Note"}
+                      <Check size={16} />
+                    </DrawerClose>
                   </div>
                   <Editable
-                    className="rounded-md bg-gray-100 outline-0 px-4 py-4 h-[80vh] dark:bg-[#111] overflow-y-scroll overflow-x-hidden scroll-m-0 "
+                    className="h-[80vh] scroll-m-0 overflow-x-hidden overflow-y-scroll rounded-md bg-gray-100 px-4 py-4 outline-0 dark:bg-[#111]"
                     spellCheck
                     autoFocus
-                    onChange={(value) => {
-                      console.log("Editor value changed:", value);
-                      setNoteValue(value);
-                    }}
                     onKeyDown={(event) => {
                       if (!event.ctrlKey) {
                         return;
@@ -506,23 +800,80 @@ function Homepage() {
                           event.preventDefault();
                           CustomEditor.toggleUnderlineMark(editor);
 
-
                           break;
                         }
                       }
                     }}
                     onPaste={(event) => {
-                      CustomEditor.handlePaste(editor, event)
+                      CustomEditor.handlePaste(editor, event);
                     }}
                     renderLeaf={renderLeaf}
                     renderElement={renderElement}
                   />
                 </Slate>
               </div>
-                {/* <Button>Submit</Button> */}
-                
+              {/* <Button>Submit</Button> */}
             </DrawerContent>
           </Drawer>
+        </div>
+
+        <div>
+          <ul className="mt-12 grid grid-cols-4 gap-4 max-md:grid-cols-3 max-sm:grid-cols-1">
+            {notes.map((note) => (
+              <li
+                key={note._id}
+                className="hover:bg-gray-[#222] flex flex-1 items-center justify-between rounded-lg border border-gray-600 p-3"
+              >
+                <div>
+                  <div className="font-semibold">{note.title}</div>
+                  <div className="text-xs text-gray-500">
+                    {note.author} • {new Date(note.createdAt).toLocaleString()}
+                  </div>
+                  <div className="mt-1 max-h-10 flex-1 overflow-y-hidden text-sm text-gray-600">
+                    {renderNotePreview(note.content)}
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      setEditingNote(note);
+                      setTitle(note.title);
+                      setDrawerOpen(true);
+                      try {
+                        editor.children = Array.isArray(note.content)
+                          ? note.content
+                          : initialValue;
+                      } catch (error) {
+                        console.error("Error setting editor content:", error);
+                      }
+                      editor.children = note.content;
+                      Transforms.select(editor, Editor.start(editor, []));
+                    }}
+                    className="hover:text-accent-foreground hover:bg-[#222]"
+                    variant="outline bg-[#111] hover:bg-[#222] hover:text-accent-foreground"
+                  >
+                    <Pencil fill="#fff" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive bg-[#111] hover:bg-[#222] hover:text-accent-foreground"
+                    onClick={async () => {
+                      await fetch(`/api/notes/${note._id}`, {
+                        method: "DELETE",
+                      });
+                      setNotes((prev) =>
+                        prev.filter((n) => n._id !== note._id),
+                      );
+                    }}
+                    className="hover:text-accent-foreground hover:bg-[#222]"
+                  >
+                    <Trash />
+                  </Button>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </>
