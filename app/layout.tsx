@@ -15,7 +15,7 @@ function HideHeaderWrapper({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex w-full flex-col">
       <div className="flex w-full justify-between">
-      {!hideHeader && (<SidebarTrigger className="mt-4"/>) }
+     
       {!hideHeader && <Header />}
       </div>
       <main className="flex flex-1 flex-col px-4 pt-10 xl:px-8">
@@ -41,15 +41,11 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <SidebarProvider>
-              <AppSidebar />
-              {/* <SidebarTrigger className="mt-4"/> */}
               <HideHeaderWrapper>
                 
                 {children}
               </HideHeaderWrapper>
               <Toaster />
-            </SidebarProvider>
           </ThemeProvider>
         </SessionProvider>
       </body>

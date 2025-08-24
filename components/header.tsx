@@ -38,10 +38,10 @@ function Header() {
     };
 
     return (
-        <header className=" justify-between items-center ml-8 flex-1 mt-4 flex p-4 border border-neutral-700 rounded-full dark:bg-[#000] shadow-lg px-3 sm:px-8 relative">
+        <header className=" justify-between items-center flex-1 mt-4 flex p-4 border border-neutral-700 rounded-full dark:bg-[#000] shadow-lg px-3 sm:px-8 relative">
             <Link href='/' className="flex flex-row items-end gap-2">
                 <Image src={logo} alt="GOAT Notes Logo" width={60} height={60} className="rounded-full piority" />
-                <h1 className="text-2xl flex flex-col font-semibold leading-6 pb-1">GOAT <span>Notes</span></h1>
+                <h1 className="text-2xl flex flex-col font-semibold leading-6 pb-1">Eazy<span>Notes</span></h1>
             </Link>
             <div className="flex flex-row items-center gap-4 max-sm:gap-2">
                 {(user || formAuth) ? (
