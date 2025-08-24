@@ -60,7 +60,8 @@ export default function AI({ notes }: AIProps) {
             `Title: ${note.title}\nContent: ${extractTextFromContent(
               note.content
             )}\nCreated: ${note.createdAt}`
-        )
+        )ev
+        
         .join("\n\n---\n\n");
 
       // Call server-side API route
