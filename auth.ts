@@ -4,19 +4,20 @@ import GoogleProvider from "next-auth/providers/google";
 import User from "./models/user";
 import { connectToDatabase } from "@/utils/database";
 
-if (!process.env.GITHUB_ID || !process.env.GITHUB_SECRET || !process.env.GOOGLE_ID || !process.env.GOOGLE_SECRET) {
-  throw new Error("Missing OAuth environment variables");
-}
+const GITHUB_ID = process.env.GITHUB_ID || "default-github-id";
+const GITHUB_SECRET = process.env.GITHUB_SECRET || "default-github-secret";
+const GOOGLE_ID = process.env.GOOGLE_ID || "default-google-id";
+const GOOGLE_SECRET = process.env.GOOGLE_SECRET || "default-google-secret";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     GitHub({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
+      clientId: GITHUB_ID,
+      clientSecret: GITHUB_SECRET,
     }),
     GoogleProvider({
-      clientId: process.env.GOOGLE_ID,
-      clientSecret: process.env.GOOGLE_SECRET,
+      clientId: GOOGLE_ID,
+      clientSecret: GOOGLE_SECRET,
     }),
   ],
   callbacks: {
