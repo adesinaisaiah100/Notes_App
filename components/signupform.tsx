@@ -13,11 +13,11 @@ function Signupform() {
   });
   const [error, setError] = useState('');
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     if (form.password !== form.confirm_password) {
@@ -41,7 +41,7 @@ function Signupform() {
         const data = await res.json();
         setError(data.message || 'Registration failed');
       }
-    } catch (err) {
+    } catch {
       setError('Registration failed');
     }
   };

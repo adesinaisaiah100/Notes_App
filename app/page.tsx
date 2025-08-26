@@ -7,7 +7,7 @@ import {
   ListIcon,
   ListOrdered,
   PlusCircle,
-  PencilIcon,
+  // PencilIcon (unused)
   Trash,
   Pencil,
 } from "lucide-react";
@@ -26,14 +26,13 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
+  // DrawerDescription, DrawerFooter (unused)
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import Image from "next/image";
-import { ListStart } from "lucide-react";
+// removed unused imports
 import {
   BoldIcon,
   UnderlineIcon,
@@ -49,12 +48,12 @@ import {
   Element,
   Transforms,
 } from "slate";
-import { Slate, Editable, withReact, ReactEditor } from "slate-react";
+import { Slate, Editable, withReact, ReactEditor, RenderLeafProps, RenderElementProps } from "slate-react";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import AI from "./AI/ai"
 
-type ApiNoteResponse = Note | Note[];
+// type ApiNoteResponse = Note | Note[]; (unused)
 
 type CustomElement = {
   type:
@@ -99,11 +98,17 @@ type Note = {
 function Homepage() {
   const { data: session } = useSession();
   const [notes, setNotes] = useState<Note[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const [editorContent, setEditorContent] = useState<Descendant[]>([
+    {
+      type: "paragraph",
+      children: [{ text: "" }],
+    },
+  ]);
 
   useEffect(() => {
     if (!session) return;
@@ -150,6 +155,7 @@ function Homepage() {
 
       setTitle("");
       editor.children = [{ type: "paragraph", children: [{ text: "" }] }];
+      setEditorContent(editor.children);
       setDrawerOpen(false);
     } catch (error) {
       console.error(error);
@@ -283,62 +289,62 @@ function Homepage() {
   console.log({ editor, initialValue });
 
   const CustomEditor = {
-    handlePaste(editor, event) {
-      const text = event.clipboardData.getData("text/plain");
+    handlePaste(editor: Editor, event: React.ClipboardEvent<HTMLDivElement>) {
+      const text = event.clipboardData?.getData("text/plain");
 
-      console.log("onPaste", event.clipboardData.getData("text/plain"));
+      console.log("onPaste", text);
     },
 
-    isBoldMarkActive(editor) {
+  isBoldMarkActive(editor: Editor) {
       const marks = Editor.marks(editor);
       return marks ? marks.bold === true : false;
     },
 
-    isUnderlineMarkActive(editor) {
+  isUnderlineMarkActive(editor: Editor) {
       const marks = Editor.marks(editor);
       return marks ? marks.underline === true : false;
     },
 
-    isItalicMarkActive(editor) {
+  isItalicMarkActive(editor: Editor) {
       const marks = Editor.marks(editor);
       return marks ? marks.italic === true : false;
     },
 
-    isHeading1Active(editor) {
+  isHeading1Active(editor: Editor) {
       const [match] = Editor.nodes(editor, {
         match: (n) => Element.isElement(n) && n.type === "heading-one",
       });
       return !!match;
     },
-    isHeading2Active(editor) {
+  isHeading2Active(editor: Editor) {
       const [match] = Editor.nodes(editor, {
         match: (n) => Element.isElement(n) && n.type === "heading-two",
       });
       return !!match;
     },
 
-    isOrderedListActive(editor) {
+  isOrderedListActive(editor: Editor) {
       const [match] = Editor.nodes(editor, {
         match: (n) => Element.isElement(n) && n.type === "ordered-list",
       });
       return !!match;
     },
 
-    isUnorderedListActive(editor) {
+  isUnorderedListActive(editor: Editor) {
       const [match] = Editor.nodes(editor, {
         match: (n) => Element.isElement(n) && n.type === "unordered-list",
       });
       return !!match;
     },
 
-    isListItemActive(editor) {
+  isListItemActive(editor: Editor) {
       const [match] = Editor.nodes(editor, {
         match: (n) => Element.isElement(n) && n.type === "list-item",
       });
       return !!match;
     },
 
-    isCodeBlockActive(editor) {
+  isCodeBlockActive(editor: Editor) {
       const [match] = Editor.nodes(editor, {
         match: (n) => Element.isElement(n) && n.type === "code",
       });
@@ -346,13 +352,13 @@ function Homepage() {
       return !!match;
     },
 
-    insertImage(editor, url) {
+  insertImage(editor: Editor, url: string) {
       const text = { text: "" };
       const image: CustomElement = { type: "image", url, children: [text] };
       Transforms.insertNodes(editor, image);
     },
 
-    toggleBoldMark(editor) {
+  toggleBoldMark(editor: Editor) {
       const isActive = CustomEditor.isBoldMarkActive(editor);
       if (isActive) {
         Editor.removeMark(editor, "bold");
@@ -361,7 +367,7 @@ function Homepage() {
       }
     },
 
-    toggleCodeBlock(editor) {
+  toggleCodeBlock(editor: Editor) {
       const isActive = CustomEditor.isCodeBlockActive(editor);
       Transforms.setNodes(
         editor,
@@ -370,7 +376,7 @@ function Homepage() {
       );
     },
 
-    toggleHeading1(editor) {
+  toggleHeading1(editor: Editor) {
       const isActive = CustomEditor.isHeading1Active(editor);
       Transforms.setNodes(
         editor,
@@ -379,7 +385,7 @@ function Homepage() {
       );
     },
 
-    toggleHeading2(editor) {
+  toggleHeading2(editor: Editor) {
       const isActive = CustomEditor.isHeading2Active(editor);
       Transforms.setNodes(
         editor,
@@ -388,7 +394,7 @@ function Homepage() {
       );
     },
 
-    toggleListItem(editor) {
+  toggleListItem(editor: Editor) {
       const isActive = CustomEditor.isListItemActive(editor);
       Transforms.setNodes(
         editor,
@@ -400,7 +406,7 @@ function Homepage() {
       );
     },
 
-    toggleUnderlineMark(editor) {
+  toggleUnderlineMark(editor: Editor) {
       const isActive = CustomEditor.isUnderlineMarkActive(editor);
       if (isActive) {
         Editor.removeMark(editor, "underline");
@@ -409,7 +415,7 @@ function Homepage() {
       }
     },
 
-    toggleItalicMark(editor) {
+  toggleItalicMark(editor: Editor) {
       const isActive = CustomEditor.isItalicMarkActive(editor);
       if (isActive) {
         Editor.removeMark(editor, "italic");
@@ -418,7 +424,7 @@ function Homepage() {
       }
     },
 
-    toggleOrderedList(editor) {
+  toggleOrderedList(editor: Editor) {
       const isActive = CustomEditor.isOrderedListActive(editor);
 
       if (isActive) {
@@ -435,7 +441,7 @@ function Homepage() {
       }
     },
 
-    toggleUnorderedList(editor) {
+  toggleUnorderedList(editor: Editor) {
       const isActive = CustomEditor.isUnorderedListActive(editor);
 
       if (isActive) {
@@ -487,7 +493,7 @@ function Homepage() {
     event.target.value = "";
   };
 
-  const renderLeaf = useCallback((props) => {
+  const renderLeaf = useCallback((props: RenderLeafProps) => {
     return (
       <span
         {...props.attributes}
@@ -501,7 +507,7 @@ function Homepage() {
       </span>
     );
   }, []);
-  const renderElement = useCallback((props) => {
+  const renderElement = useCallback((props: RenderElementProps) => {
     switch (props.element.type) {
       case "code":
         return (
@@ -516,14 +522,23 @@ function Homepage() {
         return <p {...props.attributes}>{props.children}</p>;
       case "image": {
         const { url, alt } = props.element;
+        if (!url || typeof url !== "string") {
+          return (
+            <div {...props.attributes}>
+              <div contentEditable={false} style={{ userSelect: "none" }}>
+                <div className="w-full h-40 bg-gray-200 flex items-center justify-center text-sm text-gray-600">
+                  Image not available
+                </div>
+              </div>
+              {props.children}
+            </div>
+          );
+        }
+
         return (
           <div {...props.attributes}>
             <div contentEditable={false} style={{ userSelect: "none" }}>
-              <Image
-                src={url}
-                alt={alt || ""}
-                className="block max-h-80 max-w-full"
-              />
+              <Image src={url} alt={alt || ""} className="block max-h-80 max-w-full" />
             </div>
             {props.children}
           </div>
@@ -596,7 +611,7 @@ function Homepage() {
                 <PlusCircle /> New Note
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="sm:max-w-[425px] bg-accent dark:bg-[#000] *:focus { outline: none; } *:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }">
               <DialogHeader>
                 <DialogTitle>New Note</DialogTitle>
               </DialogHeader>
@@ -632,7 +647,8 @@ function Homepage() {
               <div className="flex flex-col gap-4 p-4">
                 <Slate
                   editor={editor}
-                  initialValue={initialValue}
+                  initialValue={editorContent}
+                  key={editingNote?._id || 'new'}
                   onChange={(value) => {
                     const isAsstChange = editor.operations.some(
                       (op) => op.type !== "set_selection",
@@ -655,7 +671,12 @@ function Homepage() {
                     accept="image/*"
                     className="hidden"
                   />
-                  <div className="relative flex flex-row items-center gap-2">
+                  <div className="relative flex flex-row items-center justify-between gap-2">
+                    <div className="flex flex-row gap-2 max-sm:overflow-x-scroll pb-2 w-80  [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar]:h-1
+  [&::-webkit-scrollbar-track]:bg-gray-100
+  [&::-webkit-scrollbar-thumb]:bg-gray-300
+  dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+  dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500">
                     <Button
                       variant="outline"
                       style={stylesa}
@@ -762,9 +783,10 @@ function Homepage() {
                     >
                       <Heading2 />
                     </Button>
+                    </div>
                     <DrawerClose
                       onClick={handleSave}
-                      className="focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground absolute top-0 right-0 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-3 text-sm font-medium whitespace-nowrap shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+                      className="focus-visible:ring-ring border-input bg-black hover:bg-[#111] hover:text-accent-foreground absolute top-0 right-0 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-3 text-sm font-medium whitespace-nowrap shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
                     >
                       {editingNote ? "Update Note" : "Save Note"}
                       <Check size={16} />
@@ -829,7 +851,11 @@ function Homepage() {
                   <div className="text-xs text-gray-500">
                     {note.author} • {new Date(note.createdAt).toLocaleString()}
                   </div>
-                  <div className="mt-1 max-h-10 flex-1 overflow-y-hidden text-sm text-gray-600">
+                  <div className="mt-1 max-h-10 flex-1 overflow-y-hidden text-sm text-gray-600 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar]:h-1
+  [&::-webkit-scrollbar-track]:bg-gray-100
+  [&::-webkit-scrollbar-thumb]:bg-gray-300
+  dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+  dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500">
                     {renderNotePreview(note.content)}
                   </div>
                 </div>
@@ -840,15 +866,10 @@ function Homepage() {
                       setEditingNote(note);
                       setTitle(note.title);
                       setDrawerOpen(true);
-                      try {
-                        editor.children = Array.isArray(note.content)
-                          ? note.content
-                          : initialValue;
-                      } catch (error) {
-                        console.error("Error setting editor content:", error);
-                      }
-                      editor.children = note.content;
-                      Transforms.select(editor, Editor.start(editor, []));
+                      const content = Array.isArray(note.content) && note.content.length > 0
+                        ? (note.content as Descendant[])
+                        : [{ type: "paragraph", children: [{ text: "" }] } as Descendant];
+                      setEditorContent(content as Descendant[]);
                     }}
                     className="hover:text-accent-foreground hover:bg-[#222]"
                     variant="outline bg-[#111] hover:bg-[#222] hover:text-accent-foreground"

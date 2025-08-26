@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "deepseek-r1-distill-llama-70b",
+        model: "openai/gpt-oss-120b",
         temperature: 0.7,
         max_tokens: 512,
         stream: true,
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       try {
         const errorData = await groqRes.json();
         errorMessage = errorData.error?.message || errorMessage;
-      } catch (e) {
+      } catch {
         // fallback if not JSON
         errorMessage = await groqRes.text();
       }

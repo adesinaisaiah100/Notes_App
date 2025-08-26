@@ -1,16 +1,20 @@
 "use client";
 import React from "react";
-import AuthForm from "@/components/authForm";
+import dynamic from "next/dynamic";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { GithubIcon} from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 
+const AuthForm = dynamic(() => import("@/components/authForm"), {
+  loading: () => <p>Loading form...</p>,
+});
+
 function LoginPage() {
   return (
     <div className="mt-5 flex flex-1 flex-col items-center">
-      <Card className="w-full max-w-md bg-white px-7 py-9 shadow-md dark:bg-gray-800">
+      <Card className="w-full max-w-md bg-white px-7 py-9 shadow-md dark:bg-black">
         <CardHeader className="mb-4">
           <CardTitle className="text-center text-xl">Login</CardTitle>
         </CardHeader>

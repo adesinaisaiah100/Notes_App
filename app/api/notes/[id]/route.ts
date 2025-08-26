@@ -4,7 +4,8 @@ import { auth } from "@/auth";
 import Note from "@/models/Notes";
 import { connectToDatabase } from "@/utils/database";
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, context: unknown) {
+  const { params } = context as { params: { id: string } };
   try {
     await connectToDatabase();
     const session = await auth();
@@ -31,7 +32,8 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function DELETE(_: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_: Request, context: unknown) {
+  const { params } = context as { params: { id: string } };
   try {
     await connectToDatabase();
     const session = await auth();

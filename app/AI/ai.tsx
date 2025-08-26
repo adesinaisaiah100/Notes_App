@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Descendant, Element, Text } from "slate";
+import ReactMarkdown from 'react-markdown';
 
 // Define Note type
 type Note = {
@@ -98,13 +99,14 @@ export default function AI({ notes }: AIProps) {
             const json = JSON.parse(data);
             const token = json.choices?.[0]?.delta?.content ?? "";
             if (token) setAnswer((prev) => prev + token);
-          } catch (err) {
+          } catch (err: unknown) {
             console.warn("Failed to parse streaming data:", err);
           }
         }
       }
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg || "An unexpected error occurred.");
     } finally {
       setLoading(false);
     }
@@ -112,7 +114,7 @@ export default function AI({ notes }: AIProps) {
 
   return (
     <div className="flex flex-col gap-4 p-8">
-      <div className="flex flex-row items-center gap-4 p-4">
+      <div className="flex flex-row items-center gap-4 p-8">
         <Input
           placeholder="Ask a question about your notes..."
           value={question}
@@ -135,8 +137,9 @@ export default function AI({ notes }: AIProps) {
       {error && <p className="text-red-500" role="alert">{error}</p>}
 
       {answer && (
-        <div className="rounded-md bg-gray-100 p-4 dark:bg-gray-800">
-          <p className="text-sm whitespace-pre-line">{answer}</p>
+        <div className="rounded-md bg-gray-100 p-8 dark:bg-black">
+          <ReactMarkdown>{answer}</ReactMarkdown>
+          
         </div>
       )}
     </div>

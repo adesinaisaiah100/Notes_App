@@ -5,8 +5,9 @@ import { Toaster } from "@/components/ui/sonner";
 import Header from "@/components/header";
 import { SessionProvider } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
+// Sidebar components currently unused in layout; keep import commented for future use
+// import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+// import { AppSidebar } from "@/components/app-sidebar";
 
 function HideHeaderWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
