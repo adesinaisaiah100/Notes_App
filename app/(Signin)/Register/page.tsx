@@ -31,7 +31,7 @@ function page() {
           </div>
           <Button
                     variant={"outline"}
-                    className="rounded-full p-3 bg-black text-white hover:text-white hover:bg-neutral-800"
+                    className="rounded-full p-3 mb-2 bg-black text-white hover:text-white hover:bg-neutral-800"
                     onClick={() => signIn("github", { callbackUrl: "/" })}
                   >
                     <span><GithubIcon /></span>Sign in with GitHub
