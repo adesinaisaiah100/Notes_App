@@ -1,7 +1,8 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 // Use environment variable for MongoDB URI
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/mydatabase';
+const MONGODB_URI =
+  process.env.MONGODB_URI || "mongodb://localhost:27017/mydatabase";
 
 // Global connection tracking for serverless environments
 let isConnected = false; // Fixed typo
@@ -16,8 +17,8 @@ const options = {
 
 export const connectToDatabase = async () => {
   // Set strictQuery before connection
-  mongoose.set('strictQuery', true);
-  
+  mongoose.set("strictQuery", true);
+
   // Check if already connected
   if (isConnected && mongoose.connection.readyState === 1) {
     console.log("MongoDB is already connected");
@@ -27,23 +28,22 @@ export const connectToDatabase = async () => {
   try {
     // Connect to MongoDB with options
     await mongoose.connect(MONGODB_URI, options);
-    
+
     isConnected = true;
     console.log("MongoDB connected successfully");
-    
+
     // Handle connection events
-    mongoose.connection.on('error', (error) => {
-      console.error('MongoDB connection error:', error);
+    mongoose.connection.on("error", (error) => {
+      console.error("MongoDB connection error:", error);
       isConnected = false;
     });
 
-    mongoose.connection.on('disconnected', () => {
-      console.log('MongoDB disconnected');
+    mongoose.connection.on("disconnected", () => {
+      console.log("MongoDB disconnected");
       isConnected = false;
     });
 
     return mongoose.connection;
-    
   } catch (error) {
     console.error("MongoDB connection error:", error);
     isConnected = false;

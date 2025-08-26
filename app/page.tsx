@@ -98,7 +98,7 @@ type Note = {
 function Homepage() {
   const { data: session } = useSession();
   const [notes, setNotes] = useState<Note[]>([]);
-  const [_loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -840,6 +840,9 @@ function Homepage() {
         </div>
 
         <div>
+          {loading && (
+            <div className="p-4 text-sm text-gray-500">Loading notes...</div>
+          )}
           <ul className="mt-12 grid grid-cols-4 gap-4 max-md:grid-cols-3 max-sm:grid-cols-1">
             {notes.map((note) => (
               <li
@@ -871,14 +874,14 @@ function Homepage() {
                         : [{ type: "paragraph", children: [{ text: "" }] } as Descendant];
                       setEditorContent(content as Descendant[]);
                     }}
-                    className="hover:text-accent-foreground hover:bg-[#222]"
-                    variant="outline bg-[#111] hover:bg-[#222] hover:text-accent-foreground"
+                    className="bg-[#111] hover:text-accent-foreground hover:bg-[#222]"
+                    variant="outline"
                   >
                     <Pencil fill="#fff" />
                   </Button>
                   <Button
                     size="sm"
-                    variant="destructive bg-[#111] hover:bg-[#222] hover:text-accent-foreground"
+                    variant="destructive"
                     onClick={async () => {
                       await fetch(`/api/notes/${note._id}`, {
                         method: "DELETE",
@@ -887,7 +890,7 @@ function Homepage() {
                         prev.filter((n) => n._id !== note._id),
                       );
                     }}
-                    className="hover:text-accent-foreground hover:bg-[#222]"
+                    className="bg-[#111] hover:text-accent-foreground hover:bg-[#222]"
                   >
                     <Trash />
                   </Button>
