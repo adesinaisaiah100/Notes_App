@@ -1,7 +1,7 @@
 # eazy-notes
 
 ## Overview
-App 7 is a modern web application designed to provide a seamless user experience for managing authentication, AI integrations, and note-taking functionalities. Built with Next.js, TypeScript, and MongoDB, this app leverages the latest technologies to deliver a robust and scalable solution.
+Eazy-notes is a modern web application designed to provide a seamless user experience for managing authentication, AI integrations, and note-taking functionalities. Built with Next.js, TypeScript, and MongoDB, this app leverages the latest technologies to deliver a robust and scalable solution.
 
 ## Features
 
