@@ -1,33 +1,45 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI as string;
+const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
   throw new Error("Please define the MONGODB_URI environment variable");
 }
 
+type MongooseCache = {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+};
+
 declare global {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  // Allow attaching a mongoose cache to global for serverless environments
-  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-  var _mongooseGlobalCache: {
-    conn: typeof mongoose | null;
-    promise: Promise<typeof mongoose> | null;
-  } | undefined;
+  namespace NodeJS {
+    interface Global {
+      __MONGO_CACHE__?: MongooseCache;
+    }
+  }
 }
 
-let cached = global._mongooseGlobalCache;
+const g = globalThis as typeof globalThis & { __MONGO_CACHE__?: MongooseCache };
 
-if (!cached) {
-  cached = global._mongooseGlobalCache = { conn: null, promise: null };
-}
+if (!g.__MONGO_CACHE__) g.__MONGO_CACHE__ = { conn: null, promise: null };
+
+const cache = g.__MONGO_CACHE__ as MongooseCache;
 
 export async function connectDB() {
-  if (cached!.conn) return cached!.conn;
+  if (cache.conn) return cache.conn;
 
-  if (!cached!.promise) {
-    cached!.promise = mongoose.connect(MONGODB_URI).then((m) => m);
+  if (!cache.promise) {
+    cache.promise = mongoose.connect(MONGODB_URI as string).then((m) => m);
   }
-  cached!.conn = await cached!.promise;
-  return cached!.conn;
+
+  cache.conn = await cache.promise;
+  return cache.conn;
+}
+
+export async function disconnectDB() {
+  if (cache.conn) {
+    await mongoose.disconnect();
+    cache.conn = null;
+    cache.promise = null;
+  }
 }
