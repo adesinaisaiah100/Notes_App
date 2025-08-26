@@ -1,45 +1,38 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = process.env.MONGODB_URI as string;
 
 if (!MONGODB_URI) {
   throw new Error("Please define the MONGODB_URI environment variable");
 }
 
-type MongooseCache = {
+type MongooseGlobalCache = {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
 };
 
 declare global {
-  namespace NodeJS {
-    interface Global {
-      __MONGO_CACHE__?: MongooseCache;
-    }
-  }
+  // eslint-disable-next-line no-var
+  var _mongooseGlobalCache: MongooseGlobalCache | undefined;
 }
 
-const g = globalThis as typeof globalThis & { __MONGO_CACHE__?: MongooseCache };
+// Use a global variable so that the value is preserved across module reloads
+// in development (and serverless environments).
+let cached = global._mongooseGlobalCache;
 
-if (!g.__MONGO_CACHE__) g.__MONGO_CACHE__ = { conn: null, promise: null };
-
-const cache = g.__MONGO_CACHE__ as MongooseCache;
+if (!cached) {
+  cached = { conn: null, promise: null };
+  global._mongooseGlobalCache = cached;
+}
 
 export async function connectDB() {
-  if (cache.conn) return cache.conn;
+  // cached is initialized above; use non-null assertion to satisfy TypeScript
+  if (cached!.conn) return cached!.conn;
 
-  if (!cache.promise) {
-    cache.promise = mongoose.connect(MONGODB_URI as string).then((m) => m);
+  if (!cached!.promise) {
+    cached!.promise = mongoose.connect(MONGODB_URI).then((m) => m);
   }
 
-  cache.conn = await cache.promise;
-  return cache.conn;
-}
-
-export async function disconnectDB() {
-  if (cache.conn) {
-    await mongoose.disconnect();
-    cache.conn = null;
-    cache.promise = null;
-  }
+  cached!.conn = await cached!.promise;
+  return cached!.conn;
 }

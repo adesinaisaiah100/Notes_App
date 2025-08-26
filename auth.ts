@@ -20,7 +20,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             return session
         },
 
-        async signIn({account,profile,user,credentials}){
+        async signIn({user,}){
             try {
                 await connectToDatabase()
                 const checkEmail=await User.find({email:user.email})
