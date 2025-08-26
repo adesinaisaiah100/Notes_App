@@ -607,7 +607,7 @@ function Homepage() {
           </Drawer>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="focus-visible:ring-ring border-input hover:bg-[#111] hover:text-accent-foreground mt-4 flex h-9 w-[120px] items-center justify-center gap-2 rounded-md border bg-[#111] px-3 text-sm font-medium whitespace-nowrap shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 dark:bg-green-300 dark:text-gray-900 dark:hover:bg-green-200">
+              <Button className="focus-visible:ring-ring border-input hover:bg-[#111] hover:white mt-4 flex h-9 w-[120px] items-center justify-center gap-2 rounded-md border bg-[#111] px-3 text-sm font-medium whitespace-nowrap shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 dark:bg-green-300 dark:text-gray-900 dark:hover:bg-green-200">
                 <PlusCircle /> New Note
               </Button>
             </DialogTrigger>

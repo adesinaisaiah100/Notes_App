@@ -1,5 +1,6 @@
 // app/api/ai/route.ts
 import { NextRequest } from "next/server";
+import  validator  from "validator";
 
 export async function POST(req: NextRequest) {
   const { question, notesContext } = await req.json();
@@ -10,6 +11,10 @@ export async function POST(req: NextRequest) {
       headers: { "Content-Type": "application/json" },
     });
   }
+
+  // Sanitize AI input
+  const sanitizedQuestion = validator.escape(question);
+  const sanitizedNotesContext = validator.escape(notesContext);
 
   try {
     const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -31,7 +36,7 @@ export async function POST(req: NextRequest) {
           },
           {
             role: "user",
-            content: `Notes:\n${notesContext}\n\nQuestion: ${question}\n\nAnswer:`,
+            content: `Notes:\n${sanitizedNotesContext}\n\nQuestion: ${sanitizedQuestion}\n\nAnswer:`,
           },
         ],
       }),
