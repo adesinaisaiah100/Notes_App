@@ -9,6 +9,7 @@ import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { FcGoogle } from "react-icons/fc";
 import { signIn } from "next-auth/react";
+import { GithubIcon } from "lucide-react";
 
 const Signupform = dynamic(() => import("@/components/signupform"), {
   loading: () => <p>Loading form...</p>,
@@ -29,8 +30,15 @@ function page() {
             <div className="h-px flex-1 bg-gray-300" />
           </div>
           <Button
+                    variant={"outline"}
+                    className="rounded-full p-3 bg-black text-white hover:text-white hover:bg-neutral-800"
+                    onClick={() => signIn("github", { callbackUrl: "/" })}
+                  >
+                    <span><GithubIcon /></span>Sign in with GitHub
+                  </Button>
+          <Button
             variant="outline"
-            className="rounded-full bg-white text-black dark:text-gray-200 hover:bg-gray-100 border flex items-center justify-center gap-2"
+            className="rounded-full p-3 bg-white text-black dark:text-gray-200 hover:bg-gray-100 border flex items-center justify-center gap-2"
             onClick={() => signIn("google", { callbackUrl: "/" })}
           >
             <FcGoogle /> Sign up with Google

@@ -27,7 +27,7 @@ function LoginPage() {
           </div>
           <Button
           variant={"outline"}
-          className="rounded-full bg-black text-white hover:text-white hover:bg-neutral-800"
+          className="rounded-full p-3 bg-black text-white hover:text-white hover:bg-neutral-800"
           onClick={() => signIn("github", { callbackUrl: "/" })}
         >
           <span><GithubIcon /></span>Sign in with GitHub
@@ -35,7 +35,7 @@ function LoginPage() {
       <div className="mt-4">
         <Button
           variant="outline"
-          className="rounded-full bg-white text-black hover:bg-gray-100 dark:text-white border flex items-center justify-center gap-2 w-full"
+          className="rounded-full p-3 bg-white text-black hover:bg-gray-100 dark:text-white border flex items-center justify-center gap-2 w-full"
           onClick={() => signIn("google", { callbackUrl: "/" })}
         >
           <FcGoogle /> Sign in with Google
