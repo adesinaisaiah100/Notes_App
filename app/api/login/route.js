@@ -15,7 +15,7 @@ export async function POST(req) {
   if (!user) {
     return new Response(JSON.stringify({ message: "User not found. Please register." }), { status: 404 });
   }
-  const isMatch = await bcrypt.compare(sanitizedPassword, user.password);
+  const isMatch = await bcrypt.compare(sanitizedPassword || '', user.password);
   if (!isMatch) {
     return new Response(JSON.stringify({ message: "Invalid credentials" }), { status: 401 });
   }
