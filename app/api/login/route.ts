@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
-import User from "@/models/user";
+import User, { IUser } from "@/models/user";
 import { connectToDatabase } from "@/utils/database";
 
 const GITHUB_ID = process.env.GITHUB_ID || "default-github-id";
@@ -25,9 +25,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       try {
         if (session.user) {
           await connectToDatabase();
-          const user = await User.findOne({ email: session.user.email });
+          const user: IUser | null = await User.findOne({ email: session.user.email });
           if (user) {
             session.user.name = user.name || session.user.email;
+            session.user.id = user._id.toString(); // Add user ID to session
           }
         }
         return session;
@@ -39,7 +40,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async signIn({ user, account }) {
       try {
         await connectToDatabase();
-        const existingUser = await User.findOne({ email: user.email });
+        const existingUser: IUser | null = await User.findOne({ email: user.email });
         if (!existingUser) {
           // Ensure account exists before accessing its properties
           if (!account) {
