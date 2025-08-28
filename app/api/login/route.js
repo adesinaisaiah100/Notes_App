@@ -25,7 +25,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       try {
         if (session.user) {
           await connectToDatabase();
-          const user: IUser | null = await User.findOne({ email: session.user.email });
+          const user = await User.findOne({ email: session.user.email });
           if (user) {
             session.user.name = user.name || session.user.email;
             session.user.id = user._id.toString(); // Add user ID to session
@@ -40,7 +40,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async signIn({ user, account }) {
       try {
         await connectToDatabase();
-        const existingUser: IUser | null = await User.findOne({ email: user.email });
+        const existingUser = await User.findOne({ email: user.email });
         if (!existingUser) {
           // Ensure account exists before accessing its properties
           if (!account) {
