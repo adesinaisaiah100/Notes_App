@@ -34,12 +34,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return session;
       }
     },
-    async signIn({ user }) {
+    async signIn({ user,account }) {
       try {
         await connectToDatabase();
         const existingUser = await User.findOne({ email: user.email });
         if (!existingUser) {
-          await User.create({ name: user.name, email: user.email });
+          await User.create({ name: user.name, email: user.email,provider: account });
         }
         return true;
       } catch (e) {

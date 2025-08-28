@@ -13,6 +13,7 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
+    provider: { type: String, default: 'credentials' },
     },
     { timestamps: true }
 );

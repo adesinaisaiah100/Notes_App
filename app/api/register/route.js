@@ -9,7 +9,7 @@ export async function POST(req) {
   if (existingUser) {
     return new Response(JSON.stringify({ message: "User already exists" }), { status: 400 });
   }
-  const hashedPassword = await bcrypt.hash(password || '', 10);
+  const hashedPassword = await bcrypt.hash(password, 10);
   await User.create({ name, email, password: hashedPassword });
   return new Response(JSON.stringify({ message: "User registered" }), { status: 200 });
 }
