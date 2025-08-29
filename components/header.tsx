@@ -52,21 +52,21 @@ function Header() {
                     </>
                 ) : (
                     <>
-                        <Button asChild variant={"outline"}>
-                            <Link href="/Register" className="max-sm:hidden sm:block">Register</Link>
+                        <Button asChild variant={"outline"} className="bg-[#111]/6 text-[#222] hover:bg-[#111]/3 hover:text-[#222] border border-gray-300  dark:bg-[#111] dark:text-white dark:hover:bg-[#333]">
+                            <Link href="/Register" className="max-sm:hidden  sm:block">Register</Link>
                         </Button>
-                        <Button asChild variant={"outline"} className="bg-black text-white hover:bg-[#444] hover:text-white">
+                        <Button asChild variant={"outline"} className="bg-[#111]/6 text-[#222] hover:bg-[#111]/3 hover:text-[#222] border border-gray-300  dark:bg-[#111] dark:text-white dark:hover:bg-[#333]">
                             <Link href="/login">Login</Link>
                         </Button>
 
                     </>
                 )}
                 {theme === "light" ? (
-                    <Button variant={"ghost"} size="icon" onClick={() => setTheme("dark")} className="rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700">
+                    <Button variant={"ghost"} size="icon" onClick={() => setTheme("dark")} className="rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-[#333]">
                         <Sun />
                     </Button>
                 ) : (
-                    <Button variant={"ghost"} size="icon" onClick={() => setTheme("light")} className="rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700">
+                    <Button variant={"ghost"} size="icon" onClick={() => setTheme("light")} className="rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-[#333]">
                         <Moon />
                     </Button>
                 )}
