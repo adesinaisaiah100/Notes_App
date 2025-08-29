@@ -48,10 +48,17 @@ import {
   Element,
   Transforms,
 } from "slate";
-import { Slate, Editable, withReact, ReactEditor, RenderLeafProps, RenderElementProps } from "slate-react";
+import {
+  Slate,
+  Editable,
+  withReact,
+  ReactEditor,
+  RenderLeafProps,
+  RenderElementProps,
+} from "slate-react";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import AI from "./AI/ai"
+import AI from "./AI/ai";
 
 // type ApiNoteResponse = Note | Note[]; (unused)
 
@@ -92,8 +99,6 @@ type Note = {
   createdAt: string;
   updatedAt: string;
 };
-
-
 
 function Homepage() {
   const { data: session } = useSession();
@@ -295,56 +300,56 @@ function Homepage() {
       console.log("onPaste", text);
     },
 
-  isBoldMarkActive(editor: Editor) {
+    isBoldMarkActive(editor: Editor) {
       const marks = Editor.marks(editor);
       return marks ? marks.bold === true : false;
     },
 
-  isUnderlineMarkActive(editor: Editor) {
+    isUnderlineMarkActive(editor: Editor) {
       const marks = Editor.marks(editor);
       return marks ? marks.underline === true : false;
     },
 
-  isItalicMarkActive(editor: Editor) {
+    isItalicMarkActive(editor: Editor) {
       const marks = Editor.marks(editor);
       return marks ? marks.italic === true : false;
     },
 
-  isHeading1Active(editor: Editor) {
+    isHeading1Active(editor: Editor) {
       const [match] = Editor.nodes(editor, {
         match: (n) => Element.isElement(n) && n.type === "heading-one",
       });
       return !!match;
     },
-  isHeading2Active(editor: Editor) {
+    isHeading2Active(editor: Editor) {
       const [match] = Editor.nodes(editor, {
         match: (n) => Element.isElement(n) && n.type === "heading-two",
       });
       return !!match;
     },
 
-  isOrderedListActive(editor: Editor) {
+    isOrderedListActive(editor: Editor) {
       const [match] = Editor.nodes(editor, {
         match: (n) => Element.isElement(n) && n.type === "ordered-list",
       });
       return !!match;
     },
 
-  isUnorderedListActive(editor: Editor) {
+    isUnorderedListActive(editor: Editor) {
       const [match] = Editor.nodes(editor, {
         match: (n) => Element.isElement(n) && n.type === "unordered-list",
       });
       return !!match;
     },
 
-  isListItemActive(editor: Editor) {
+    isListItemActive(editor: Editor) {
       const [match] = Editor.nodes(editor, {
         match: (n) => Element.isElement(n) && n.type === "list-item",
       });
       return !!match;
     },
 
-  isCodeBlockActive(editor: Editor) {
+    isCodeBlockActive(editor: Editor) {
       const [match] = Editor.nodes(editor, {
         match: (n) => Element.isElement(n) && n.type === "code",
       });
@@ -352,13 +357,13 @@ function Homepage() {
       return !!match;
     },
 
-  insertImage(editor: Editor, url: string) {
+    insertImage(editor: Editor, url: string) {
       const text = { text: "" };
       const image: CustomElement = { type: "image", url, children: [text] };
       Transforms.insertNodes(editor, image);
     },
 
-  toggleBoldMark(editor: Editor) {
+    toggleBoldMark(editor: Editor) {
       const isActive = CustomEditor.isBoldMarkActive(editor);
       if (isActive) {
         Editor.removeMark(editor, "bold");
@@ -367,7 +372,7 @@ function Homepage() {
       }
     },
 
-  toggleCodeBlock(editor: Editor) {
+    toggleCodeBlock(editor: Editor) {
       const isActive = CustomEditor.isCodeBlockActive(editor);
       Transforms.setNodes(
         editor,
@@ -376,7 +381,7 @@ function Homepage() {
       );
     },
 
-  toggleHeading1(editor: Editor) {
+    toggleHeading1(editor: Editor) {
       const isActive = CustomEditor.isHeading1Active(editor);
       Transforms.setNodes(
         editor,
@@ -385,7 +390,7 @@ function Homepage() {
       );
     },
 
-  toggleHeading2(editor: Editor) {
+    toggleHeading2(editor: Editor) {
       const isActive = CustomEditor.isHeading2Active(editor);
       Transforms.setNodes(
         editor,
@@ -394,7 +399,7 @@ function Homepage() {
       );
     },
 
-  toggleListItem(editor: Editor) {
+    toggleListItem(editor: Editor) {
       const isActive = CustomEditor.isListItemActive(editor);
       Transforms.setNodes(
         editor,
@@ -406,7 +411,7 @@ function Homepage() {
       );
     },
 
-  toggleUnderlineMark(editor: Editor) {
+    toggleUnderlineMark(editor: Editor) {
       const isActive = CustomEditor.isUnderlineMarkActive(editor);
       if (isActive) {
         Editor.removeMark(editor, "underline");
@@ -415,7 +420,7 @@ function Homepage() {
       }
     },
 
-  toggleItalicMark(editor: Editor) {
+    toggleItalicMark(editor: Editor) {
       const isActive = CustomEditor.isItalicMarkActive(editor);
       if (isActive) {
         Editor.removeMark(editor, "italic");
@@ -424,7 +429,7 @@ function Homepage() {
       }
     },
 
-  toggleOrderedList(editor: Editor) {
+    toggleOrderedList(editor: Editor) {
       const isActive = CustomEditor.isOrderedListActive(editor);
 
       if (isActive) {
@@ -441,7 +446,7 @@ function Homepage() {
       }
     },
 
-  toggleUnorderedList(editor: Editor) {
+    toggleUnorderedList(editor: Editor) {
       const isActive = CustomEditor.isUnorderedListActive(editor);
 
       if (isActive) {
@@ -526,7 +531,7 @@ function Homepage() {
           return (
             <div {...props.attributes}>
               <div contentEditable={false} style={{ userSelect: "none" }}>
-                <div className="w-full h-40 bg-gray-200 flex items-center justify-center text-sm text-gray-600">
+                <div className="flex h-40 w-full items-center justify-center bg-gray-200 text-sm text-gray-600">
                   Image not available
                 </div>
               </div>
@@ -538,7 +543,11 @@ function Homepage() {
         return (
           <div {...props.attributes}>
             <div contentEditable={false} style={{ userSelect: "none" }}>
-              <Image src={url} alt={alt || ""} className="block max-h-80 max-w-full" />
+              <Image
+                src={url}
+                alt={alt || ""}
+                className="block max-h-80 max-w-full"
+              />
             </div>
             {props.children}
           </div>
@@ -607,11 +616,11 @@ function Homepage() {
           </Drawer>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="focus-visible:ring-ring border-input hover:bg-[#111]/3 hover:white mt-4 flex h-9 w-[120px] items-center justify-center gap-2 rounded-md border bg-[#111]/6 text-[#222] px-3 text-sm font-medium whitespace-nowrap shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 dark:bg-green-300 dark:text-gray-900 dark:hover:bg-green-200">
+              <Button className="focus-visible:ring-ring border-input hover:white mt-4 flex h-9 w-[120px] items-center justify-center gap-2 rounded-md border bg-[#111]/6 px-3 text-sm font-medium whitespace-nowrap text-[#222] shadow-sm transition-colors hover:bg-[#111]/3 focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 dark:bg-green-300 dark:text-gray-900 dark:hover:bg-green-200">
                 <PlusCircle /> New Note
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] bg-accent dark:bg-[#000] *:focus { outline: none; } *:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }">
+            <DialogContent className="bg-accent *:focus { outline: none; } *:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; } sm:max-w-[425px] dark:bg-[#000]">
               <DialogHeader>
                 <DialogTitle>New Note</DialogTitle>
               </DialogHeader>
@@ -619,7 +628,7 @@ function Homepage() {
                 placeholder="Enter note title..."
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="bg-white/2 focus-visible:ring-ring focus-visible:ring-1 w-full"
+                className="focus-visible:ring-ring w-full bg-white/2 focus-visible:ring-1"
               />
               <DialogFooter>
                 <Button
@@ -649,7 +658,7 @@ function Homepage() {
                 <Slate
                   editor={editor}
                   initialValue={editorContent}
-                  key={editingNote?._id || 'new'}
+                  key={editingNote?._id || "new"}
                   onChange={(value) => {
                     const isAsstChange = editor.operations.some(
                       (op) => op.type !== "set_selection",
@@ -673,121 +682,117 @@ function Homepage() {
                     className="hidden"
                   />
                   <div className="relative flex flex-row items-center justify-between gap-2">
-                    <div className="flex flex-row gap-2 max-sm:overflow-x-scroll pb-2 w-80  [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar]:h-1
-  [&::-webkit-scrollbar-track]:bg-gray-100
-  [&::-webkit-scrollbar-thumb]:bg-gray-300
-  dark:[&::-webkit-scrollbar-track]:bg-neutral-700
-  dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500">
-                    <Button
-                      variant="outline"
-                      style={stylesa}
-                      aria-label="Toggle bold"
-                      onClick={handleActivea}
-                      onMouseDown={(event) => {
-                        event.preventDefault();
-                        CustomEditor.toggleBoldMark(editor);
-                      }}
-                    >
-                      <BoldIcon />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      style={stylesb}
-                      aria-label="Toggle italic"
-                      onClick={handleActiveb}
-                      onMouseDown={(event) => {
-                        event.preventDefault();
-                        CustomEditor.toggleItalicMark(editor);
-                      }}
-                    >
-                      <ItalicIcon />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      style={stylesc}
-                      aria-label="Toggle underline"
-                      onClick={handleActivec}
-                      onMouseDown={(event) => {
-                        event.preventDefault();
-                        CustomEditor.toggleUnderlineMark(editor);
-                      }}
-                    >
-                      <UnderlineIcon />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      aria-label="Insert image"
-                      onMouseDown={(event) => {
-                        event.preventDefault();
-                        fileInputRef.current?.click();
-                      }}
-                    >
-                      <ImageIcon />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      style={stylese}
-                      aria-label="Toggle code block"
-                      onClick={handleActivee}
-                      onMouseDown={(event) => {
-                        event.preventDefault();
-                        CustomEditor.toggleCodeBlock(editor);
-                      }}
-                    >
-                      <Code />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      style={stylesf}
-                      aria-label="Toggle list item"
-                      onClick={handleActivef}
-                      onMouseDown={(event) => {
-                        event.preventDefault();
-                        CustomEditor.toggleOrderedList(editor);
-                      }}
-                    >
-                      <ListOrdered />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      style={stylesg}
-                      aria-label="Toggle unordered list"
-                      onClick={handleActiveg}
-                      onMouseDown={(event) => {
-                        event.preventDefault();
-                        CustomEditor.toggleUnorderedList(editor);
-                      }}
-                    >
-                      <ListIcon />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      style={stylesh}
-                      aria-label="Toggle heading 1"
-                      onClick={handleActiveh}
-                      onMouseDown={(event) => {
-                        event.preventDefault();
-                        CustomEditor.toggleHeading1(editor);
-                      }}
-                    >
-                      <Heading1 />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      aria-label="Toggle heading 2"
-                      style={stylesi}
-                      onClick={handleActivei}
-                      onMouseDown={(event) => {
-                        event.preventDefault();
-                        CustomEditor.toggleHeading2(editor);
-                      }}
-                    >
-                      <Heading2 />
-                    </Button>
+                    <div className="flex w-80 flex-row gap-2 pb-2 max-sm:overflow-x-scroll [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500 [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-700">
+                      <Button
+                        variant="outline"
+                        style={stylesa}
+                        aria-label="Toggle bold"
+                        onClick={handleActivea}
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                          CustomEditor.toggleBoldMark(editor);
+                        }}
+                      >
+                        <BoldIcon />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        style={stylesb}
+                        aria-label="Toggle italic"
+                        onClick={handleActiveb}
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                          CustomEditor.toggleItalicMark(editor);
+                        }}
+                      >
+                        <ItalicIcon />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        style={stylesc}
+                        aria-label="Toggle underline"
+                        onClick={handleActivec}
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                          CustomEditor.toggleUnderlineMark(editor);
+                        }}
+                      >
+                        <UnderlineIcon />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        aria-label="Insert image"
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                          fileInputRef.current?.click();
+                        }}
+                      >
+                        <ImageIcon />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        style={stylese}
+                        aria-label="Toggle code block"
+                        onClick={handleActivee}
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                          CustomEditor.toggleCodeBlock(editor);
+                        }}
+                      >
+                        <Code />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        style={stylesf}
+                        aria-label="Toggle list item"
+                        onClick={handleActivef}
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                          CustomEditor.toggleOrderedList(editor);
+                        }}
+                      >
+                        <ListOrdered />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        style={stylesg}
+                        aria-label="Toggle unordered list"
+                        onClick={handleActiveg}
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                          CustomEditor.toggleUnorderedList(editor);
+                        }}
+                      >
+                        <ListIcon />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        style={stylesh}
+                        aria-label="Toggle heading 1"
+                        onClick={handleActiveh}
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                          CustomEditor.toggleHeading1(editor);
+                        }}
+                      >
+                        <Heading1 />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        aria-label="Toggle heading 2"
+                        style={stylesi}
+                        onClick={handleActivei}
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                          CustomEditor.toggleHeading2(editor);
+                        }}
+                      >
+                        <Heading2 />
+                      </Button>
                     </div>
                     <DrawerClose
                       onClick={handleSave}
-                      className="focus-visible:ring-ring border-input bg-black hover:bg-[#fff] hover:text-accent-foreground absolute top-0 right-0 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-3 text-sm font-medium whitespace-nowrap shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+                      className="focus-visible:ring-ring border-input hover:text-accent-foreground absolute top-0 right-0 inline-flex h-9 items-center justify-center gap-2 rounded-md border bg-black px-3 text-sm font-medium whitespace-nowrap shadow-sm transition-colors hover:bg-[#fff] focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
                     >
                       {editingNote ? "Update Note" : "Save Note"}
                       <Check size={16} />
@@ -855,11 +860,7 @@ function Homepage() {
                   <div className="text-xs text-gray-500">
                     {note.author} • {new Date(note.createdAt).toLocaleString()}
                   </div>
-                  <div className="mt-1 max-h-10 flex-1 overflow-y-hidden overflow-x-hidden text-sm text-gray-600 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar]:h-1
-  [&::-webkit-scrollbar-track]:bg-gray-100
-  [&::-webkit-scrollbar-thumb]:bg-gray-300
-  dark:[&::-webkit-scrollbar-track]:bg-neutral-700
-  dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500">
+                  <div className="mt-1 max-h-10 flex-1 overflow-x-hidden overflow-y-hidden text-sm text-gray-600 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500 [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-700">
                     {renderNotePreview(note.content)}
                   </div>
                 </div>
@@ -870,12 +871,18 @@ function Homepage() {
                       setEditingNote(note);
                       setTitle(note.title);
                       setDrawerOpen(true);
-                      const content = Array.isArray(note.content) && note.content.length > 0
-                        ? (note.content as Descendant[])
-                        : [{ type: "paragraph", children: [{ text: "" }] } as Descendant];
+                      const content =
+                        Array.isArray(note.content) && note.content.length > 0
+                          ? (note.content as Descendant[])
+                          : [
+                              {
+                                type: "paragraph",
+                                children: [{ text: "" }],
+                              } as Descendant,
+                            ];
                       setEditorContent(content as Descendant[]);
                     }}
-                    className="bg-[#111] hover:text-accent-foreground hover:bg-[#222]"
+                    className="hover:text-accent-foreground bg-[#111] hover:bg-[#222]"
                     variant="outline"
                   >
                     <Pencil fill="#fff" />
@@ -891,7 +898,7 @@ function Homepage() {
                         prev.filter((n) => n._id !== note._id),
                       );
                     }}
-                    className="bg-[#111] hover:text-accent-foreground hover:bg-[#222]"
+                    className="hover:text-accent-foreground bg-[#111] hover:bg-[#222]"
                   >
                     <Trash />
                   </Button>
