@@ -787,7 +787,7 @@ function Homepage() {
                     </div>
                     <DrawerClose
                       onClick={handleSave}
-                      className="focus-visible:ring-ring border-input bg-black hover:bg-[#111] hover:text-accent-foreground absolute top-0 right-0 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-3 text-sm font-medium whitespace-nowrap shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+                      className="focus-visible:ring-ring border-input bg-black hover:bg-[#fff] hover:text-accent-foreground absolute top-0 right-0 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-3 text-sm font-medium whitespace-nowrap shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
                     >
                       {editingNote ? "Update Note" : "Save Note"}
                       <Check size={16} />
