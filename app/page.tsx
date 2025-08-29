@@ -59,7 +59,8 @@ import {
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import AI from "./AI/ai";
-import { useRouter } from 'next/router';
+import { Redirect } from "next";
+import { redirect } from "next/navigation";
 
 // type ApiNoteResponse = Note | Note[]; (unused)
 
@@ -191,7 +192,7 @@ function Homepage() {
       return <span className="text-xs text-gray-600">Invalid content</span>;
     }
   };
-      const router = useRouter();
+ 
 
   // Slate Editor Setup
   const [isActivea, setIsActivea] = useState(false);
@@ -624,7 +625,7 @@ function Homepage() {
           </Drawer>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button onClick={!user ? () => router.push('/login') : () => console.log('use Exist')} className="focus-visible:ring-ring border-input hover:white mt-4 flex h-9 w-[120px] items-center justify-center gap-2 rounded-md border bg-[#111]/6 px-3 text-sm font-medium whitespace-nowrap text-[#222] shadow-sm transition-colors hover:bg-[#111]/3 focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 dark:bg-green-300 dark:text-gray-900 dark:hover:bg-green-200">
+              <Button onClick={!user ? () => redirect('/login') : () => console.log('use Exist')} className="focus-visible:ring-ring border-input hover:white mt-4 flex h-9 w-[120px] items-center justify-center gap-2 rounded-md border bg-[#111]/6 px-3 text-sm font-medium whitespace-nowrap text-[#222] shadow-sm transition-colors hover:bg-[#111]/3 focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 dark:bg-green-300 dark:text-gray-900 dark:hover:bg-green-200">
                 <PlusCircle /> New Note
               </Button>
             </DialogTrigger>
