@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import Header from "@/components/header";
 import { SessionProvider } from "next-auth/react";
 import { usePathname } from "next/navigation";
+import { Analytics } from "@vercel/analytics/next"
 // Sidebar components currently unused in layout; keep import commented for future use
 // import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 // import { AppSidebar } from "@/components/app-sidebar";
@@ -19,6 +20,7 @@ function HideHeaderWrapper({ children }: { children: React.ReactNode }) {
      
       {!hideHeader && <Header />}
       </div>
+      <Analytics />
       <main className="flex flex-1 flex-col px-4 pt-10 xl:px-8">
         {children}
       </main>
