@@ -4,14 +4,14 @@ export interface IUser extends Document {
   _id: string;
   name?: string;
   email: string;
-  password?: string; // Optional for OAuth users
-  provider: string; // e.g., "credentials", "github", "google"
+  password?: string;
+  provider: string;
 }
 
 const UserSchema: Schema = new Schema({
   name: { type: String, required: false },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: false }, // Optional for OAuth
+  password: { type: String, required: false },
   provider: { type: String, required: true, default: "credentials" },
 }, { timestamps: true });
 

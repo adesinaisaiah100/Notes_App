@@ -4,10 +4,10 @@ import GoogleProvider from "next-auth/providers/google";
 import User from "@/models/user";
 import { connectToDatabase } from "@/utils/database";
 
-const GITHUB_ID = process.env.GITHUB_ID || "default-github-id";
-const GITHUB_SECRET = process.env.GITHUB_SECRET || "default-github-secret";
-const GOOGLE_ID = process.env.GOOGLE_ID || "default-google-id";
-const GOOGLE_SECRET = process.env.GOOGLE_SECRET || "default-google-secret";
+const GITHUB_ID = process.env.GITHUB_ID;
+const GITHUB_SECRET = process.env.GITHUB_SECRET;
+const GOOGLE_ID = process.env.GOOGLE_ID;
+const GOOGLE_SECRET = process.env.GOOGLE_SECRET;
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -28,6 +28,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const user = await User.findOne({ email: session.user.email });
           if (user) {
             session.user.name = user.name || session.user.email;
+            session.user.id = user._id.toString(); // Add user ID to session
           }
         }
         return session;
@@ -38,23 +39,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async signIn({ user, account }) {
       try {
+        console.log("Sign-in attempt:", { user, account }); // Debugging
         await connectToDatabase();
         const existingUser = await User.findOne({ email: user.email });
         if (!existingUser) {
-          // Ensure account exists before accessing its properties
           if (!account) {
             console.error("No account information provided");
             return false;
           }
-          // Create new user for OAuth providers (no password)
           await User.create({
             name: user.name,
             email: user.email,
-            provider: account.provider,
-            // Password is not set for OAuth users
+            provider: account.provider, // Fixed: Use string value
+            password: undefined, // Explicitly set for OAuth users
           });
         } else {
-          // Update provider if different and account exists
           if (account && existingUser.provider !== account.provider) {
             existingUser.provider = account.provider;
             await existingUser.save();
@@ -62,7 +61,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
         return true;
       } catch (error) {
-        console.error("Sign-in callback error:", error);
+        console.error("Sign-in callback error:", error, { user, account });
         return false;
       }
     },
