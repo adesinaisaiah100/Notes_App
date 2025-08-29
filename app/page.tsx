@@ -855,7 +855,7 @@ function Homepage() {
                   <div className="text-xs text-gray-500">
                     {note.author} • {new Date(note.createdAt).toLocaleString()}
                   </div>
-                  <div className="mt-1 max-h-10 flex-1 overflow-y-hidden text-sm text-gray-600 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar]:h-1
+                  <div className="mt-1 max-h-10 flex-1 overflow-y-hidden overflow-x-hidden text-sm text-gray-600 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar]:h-1
   [&::-webkit-scrollbar-track]:bg-gray-100
   [&::-webkit-scrollbar-thumb]:bg-gray-300
   dark:[&::-webkit-scrollbar-track]:bg-neutral-700
