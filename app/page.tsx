@@ -59,6 +59,7 @@ import {
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import AI from "./AI/ai";
+import { useRouter } from 'next/router';
 
 // type ApiNoteResponse = Note | Note[]; (unused)
 
@@ -101,7 +102,8 @@ type Note = {
 };
 
 function Homepage() {
-  const { data: session } = useSession();
+
+  //States
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -114,7 +116,10 @@ function Homepage() {
       children: [{ text: "" }],
     },
   ]);
+  const { data: session, status } = useSession();
+      const user = status === "authenticated" && session?.user ? session.user : null;
 
+//UseEffects
   useEffect(() => {
     if (!session) return;
     const fetchNotes = async () => {
@@ -134,6 +139,7 @@ function Homepage() {
     fetchNotes();
   }, [session]);
 
+  //Handlers
   const handleSave = async () => {
     try {
       const content = editor.children;
@@ -185,7 +191,9 @@ function Homepage() {
       return <span className="text-xs text-gray-600">Invalid content</span>;
     }
   };
+      const router = useRouter();
 
+  // Slate Editor Setup
   const [isActivea, setIsActivea] = useState(false);
   const [isActiveb, setIsActiveb] = useState(false);
   const [isActivec, setIsActivec] = useState(false);
@@ -616,7 +624,7 @@ function Homepage() {
           </Drawer>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="focus-visible:ring-ring border-input hover:white mt-4 flex h-9 w-[120px] items-center justify-center gap-2 rounded-md border bg-[#111]/6 px-3 text-sm font-medium whitespace-nowrap text-[#222] shadow-sm transition-colors hover:bg-[#111]/3 focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 dark:bg-green-300 dark:text-gray-900 dark:hover:bg-green-200">
+              <Button onClick={!user ? () => router.push('/login') : () => console.log('use Exist')} className="focus-visible:ring-ring border-input hover:white mt-4 flex h-9 w-[120px] items-center justify-center gap-2 rounded-md border bg-[#111]/6 px-3 text-sm font-medium whitespace-nowrap text-[#222] shadow-sm transition-colors hover:bg-[#111]/3 focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 dark:bg-green-300 dark:text-gray-900 dark:hover:bg-green-200">
                 <PlusCircle /> New Note
               </Button>
             </DialogTrigger>
